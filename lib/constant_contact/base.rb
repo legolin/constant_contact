@@ -116,11 +116,11 @@ module ConstantContact
           instantiate_collection(get(from, options[:params]))
         when String
           path = "#{from}#{query_string(options[:params])}"
-          instantiate_collection(connection.get(path, headers) || [])
+          instantiate_collection(format.decode(connection.get(path, headers).body) || [])
         else
           prefix_options, query_options = split_options(options[:params])
           path = collection_path(prefix_options, query_options)
-          result = connection.get(path, headers)
+          result = format.decode(connection.get(path, headers).body)
           case result
           when Hash
             instantiate_collection( [ result ], prefix_options )
