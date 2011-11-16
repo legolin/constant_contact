@@ -26,11 +26,10 @@ module ActiveResource
           list = result['records']
 
           next_link = REXML::XPath.first(doc, "/feed/link[@rel='next']")
-          if next_link
+          if next_link  # Recursively add elements to the end of the list
             next_path = next_link.attribute('href').value
-            next_page = ::ConstantContact::Base.connection.get(next_path)
-            next_page = [next_page] if Hash === next_page
-            list.concat(next_page)
+            next_page = ::ConstantContact::Base.connection.get(next_path).body
+            list.concat(decode(next_page))
           end
 
           list
