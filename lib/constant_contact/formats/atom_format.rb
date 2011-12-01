@@ -34,7 +34,7 @@ module ActiveResource
 
           list
         else
-          result.values.first
+          [result.values.first]
         end
       end
       
