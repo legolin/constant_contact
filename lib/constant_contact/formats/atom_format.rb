@@ -29,12 +29,14 @@ module ActiveResource
           if next_link  # Recursively add elements to the end of the list
             next_path = next_link.attribute('href').value
             next_page = ::ConstantContact::Base.connection.get(next_path).body
-            list.concat(decode(next_page))
+            
+            next_page_decoded = decode(next_page)
+            list.concat( next_page_decoded.is_a?(Array) ? next_page_decoded : [next_page_decoded]  )
           end
 
           list
         else
-          [result.values.first]
+          result.values.first
         end
       end
       
