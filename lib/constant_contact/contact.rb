@@ -1,3 +1,5 @@
+require 'uri'
+
 # Value limits: http://constantcontact.custhelp.com/cgi-bin/constantcontact.cfg/php/enduser/std_adp.php?p_faqid=2217
 module ConstantContact
   class Contact < Base
@@ -36,7 +38,7 @@ module ConstantContact
     
     def list_url(id=nil)
       id ||= defined?(self.list_id) ? self.list_id : 1
-      "http://api.constantcontact.com/ws/customers/#{self.class.user}/lists/#{id}"
+      "http://api.constantcontact.com/ws/customers/#{URI.escape(self.class.user, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}/lists/#{id}"
     end
     
     # Can we email them?
@@ -82,7 +84,7 @@ module ConstantContact
 
       query_string = emails.map{|e| "email=#{CGI.escape(e.to_s.downcase)}"}.join('&')
 
-      path = "/ws/customers/#{self.user}/#{collection_name}?#{query_string}"
+      path = "/ws/customers/#{URI.escape(self.user, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}/#{collection_name}?#{query_string}"
       result = connection.get(path, headers)
 
       case result
