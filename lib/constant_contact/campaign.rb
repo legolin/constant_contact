@@ -28,8 +28,8 @@ module ConstantContact
 
     def to_xml
       xml = Builder::XmlMarkup.new
-      xml.tag!("Campaign", :xmlns => "http://ws.constantcontact.com/ns/1.0/") do
-        self.attributes.reject {|k,v| k == 'FromEmail' || k == 'ReplyToEmail' || k == 'ContactList'}.each{|k, v| xml.tag!( k.to_s.camelize, v )}
+      xml.tag!("Campaign", :xmlns => "http://ws.constantcontact.com/ns/1.0/", :id => self.id) do
+        self.attributes.reject {|k,v| k == 'FromEmail' || k == 'ReplyToEmail' || k == 'ContactList' || k == 'ContactLists' || k == 'id' || k == 'xmlns'}.each{|k, v| xml.tag!( k.to_s.camelize, v )}
         # Overrides the default formatting above to CC's required format.
       	xml.tag!("ReplyToEmail") do
           xml.tag!('Email', :id => self.reply_to_email_url)
