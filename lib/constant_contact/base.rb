@@ -1,3 +1,7 @@
+require 'oauth'
+require 'oauth_active_resource'
+require 'uri'
+
 module ConstantContact
   class Base < ActiveResource::Base
 
@@ -27,12 +31,65 @@ module ConstantContact
         @api_key = api_key
       end
 
+      def oauth_consumer_secret
+        if defined?(@oauth_consumer_secret)
+          @oauth_consumer_secret
+        elsif superclass != Object && superclass.oauth_consumer_secret
+          superclass.oauth_consumer_secret.dup.freeze
+        end
+      end
+
+      def oauth_consumer_secret=(oauth_consumer_secret)
+        @connection = nil
+        @oauth_consumer_secret = oauth_consumer_secret
+      end
+
+      def oauth_access_token_key
+        if defined?(@oauth_access_token_key)
+          @oauth_access_token_key
+        elsif superclass != Object && superclass.oauth_access_token_key
+          superclass.oauth_access_token_key.dup.freeze
+        end
+      end
+
+      def oauth_access_token_key=(oauth_access_token_key)
+        @connection = nil
+        @oauth_access_token_key = oauth_access_token_key
+      end
+
+      def oauth_access_token_secret
+        if defined?(@oauth_access_token_secret)
+          @oauth_access_token_secret
+        elsif superclass != Object && superclass.oauth_access_token_secret
+          superclass.oauth_access_token_secret.dup.freeze
+        end
+      end
+
+      def oauth_access_token_secret=(oauth_access_token_secret)
+        @connection = nil
+        @oauth_access_token_secret = oauth_access_token_secret
+      end
+
       def connection(refresh = false)
         if defined?(@connection) || superclass == Object
-          @connection = ActiveResource::Connection.new(site, format) if refresh || @connection.nil?
-          @connection.user = "#{api_key}%#{user}" if user
-          @connection.password = password if password
-          @connection.timeout = timeout if timeout
+          if defined?(@oauth_consumer_secret)
+            @connection = OAuthActiveResource::Connection.new(
+              OAuth::AccessToken.from_hash(
+                OAuth::Consumer.new(api_key, oauth_consumer_secret, {
+                  :site         =>  site,
+                  :scheme       =>  :header,
+                  :http_method  =>  :post
+                }),
+              :oauth_token => oauth_access_token_key,
+              :oauth_token_secret => oauth_access_token_secret),
+            site, format) if refresh || @connection.nil?
+          else
+            @connection = ActiveResource::Connection.new(site, format) if refresh || @connection.nil?
+            @connection.password = password if password
+            @connection.timeout = timeout if timeout
+            @connection.user = "#{api_key}%#{user}" if user
+          end
+
           @connection
         else
           superclass.connection
@@ -41,7 +98,7 @@ module ConstantContact
 
       def collection_path(prefix_options = {}, query_options = nil)
         prefix_options, query_options = split_options(prefix_options) if query_options.nil?
-        "/ws/customers/#{self.user}#{prefix(prefix_options)}#{collection_name}#{query_string(query_options)}"
+        "/ws/customers/#{URI.escape(self.user, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}#{prefix(prefix_options)}#{collection_name}#{query_string(query_options)}"
       end
 
       def element_path(id, prefix_options = {}, query_options = nil)
@@ -60,11 +117,11 @@ module ConstantContact
           instantiate_collection(get(from, options[:params]))
         when String
           path = "#{from}#{query_string(options[:params])}"
-          instantiate_collection(connection.get(path, headers) || [])
+          instantiate_collection(format.decode(connection.get(path, headers).body) || [])
         else
           prefix_options, query_options = split_options(options[:params])
           path = collection_path(prefix_options, query_options)
-          result = connection.get(path, headers)
+          result = format.decode(connection.get(path, headers).body)
           case result
           when Hash
             instantiate_collection( [ result ], prefix_options )

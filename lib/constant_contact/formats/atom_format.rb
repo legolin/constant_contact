@@ -26,11 +26,12 @@ module ActiveResource
           list = result['records']
 
           next_link = REXML::XPath.first(doc, "/feed/link[@rel='next']")
-          if next_link
+          if next_link  # Recursively add elements to the end of the list
             next_path = next_link.attribute('href').value
-            next_page = ::ConstantContact::Base.connection.get(next_path)
-            next_page = [next_page] if Hash === next_page
-            list.concat(next_page)
+            next_page = ::ConstantContact::Base.connection.get(next_path).body
+
+            next_page_decoded = decode(next_page)
+            list.concat( next_page_decoded.is_a?(Array) ? next_page_decoded : [next_page_decoded]  )
           end
 
           list
@@ -38,10 +39,10 @@ module ActiveResource
           result.values.first
         end
       end
-      
+
 
       private
-      
+
       def from_atom_data(doc)
         if is_collection?(doc)
           content_from_collection(doc)
@@ -49,11 +50,11 @@ module ActiveResource
           content_from_single_record(doc)
         end
       end
-      
+
       def no_content?(doc)
         REXML::XPath.match(doc,'//content').size == 0
       end
-      
+
       def is_collection?(doc)
         REXML::XPath.match(doc,'//content').size > 1
       end
@@ -66,7 +67,7 @@ module ActiveResource
         end
         str
       end
-      
+
       def content_from_collection(doc)
         str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><records type=\"array\">"
         REXML::XPath.each(doc, '//content') do |e|
@@ -76,7 +77,7 @@ module ActiveResource
         str << "</records>"
         str
       end
-      
+
       def content_from_member(doc)
         str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
         REXML::XPath.each(doc, '//content') do |e|

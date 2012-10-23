@@ -3,16 +3,12 @@ module ConstantContact
     DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
     attr_accessor :campaign_id
-
     self.prefix = "/campaigns/:campaign_id/"
+    self.collection_name = 'schedules'
 
     def initialize(*args)
       obj = super
       obj
-    end
-
-    def self.collection_name
-      'schedules'
     end
 
     def to_xml
@@ -32,6 +28,11 @@ module ConstantContact
 
     def schedule_path
       '/schedules/1'
+    end
+
+    def self.element_path(id, prefix_options = {}, query_options = nil)
+      prefix_options, query_options = split_options(prefix_options) if query_options.nil?
+      "/ws/customers/#{URI.escape(self.user, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}#{prefix(prefix_options)}#{collection_name}#{query_string(query_options)}/#{id.split('/').last}"
     end
 
     def schedule_url
