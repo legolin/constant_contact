@@ -38,7 +38,10 @@ module ConstantContact
           xml.tag!('Email', :id => self.from_email_url)
     	  end
       	xml.tag!("ContactLists") do
-      	  xml.tag!("ContactList", :id => self.contact_list)
+          self.contact_list = Array(self.contact_list) unless self.contact_list.kind_of?(Array)
+          self.contact_list.each do |list|
+            xml.tag!("ContactList", :id => list)
+          end
       	end
       end
     end
