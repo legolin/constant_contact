@@ -98,7 +98,7 @@ module ConstantContact
 
       def collection_path(prefix_options = {}, query_options = nil)
         prefix_options, query_options = split_options(prefix_options) if query_options.nil?
-        "/ws/customers/#{URI.escape(self.user, Regexp.new("[^#{URI::PATTERN::UNRESERVED}]"))}#{prefix(prefix_options)}#{collection_name}#{query_string(query_options)}"
+        "/ws/customers/#{self.user}#{prefix(prefix_options)}#{collection_name}#{query_string(query_options)}"
       end
 
       def element_path(id, prefix_options = {}, query_options = nil)
