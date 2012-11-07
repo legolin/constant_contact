@@ -3,10 +3,12 @@ require 'active_resource'
 module ConstantContact
 	class Base < ActiveResource::Base
 
-		self.site = "https://api.constantcontact.com/"
-		self.format = :atom
-
+		API_BASE_URI = "https://api.constantcontact.com/"
 		DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+		XML_NAMESPACE = "http://ws.constantcontact.com/ns/1.0/"
+
+		self.site = API_BASE_URI
+		self.format = :atom
 
 		class << self
 			# Returns an integer which can be used in #find calls.
@@ -41,7 +43,6 @@ module ConstantContact
 				@user_name = user_name
 				update_user
 			end
-
 
 			def collection_path(prefix_options = {}, query_options = nil)
 				prefix_options, query_options = split_options(prefix_options) if query_options.nil?

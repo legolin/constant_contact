@@ -16,10 +16,10 @@ module ConstantContact
 
 		def to_xml
 			xml = Builder::XmlMarkup.new
-			xml.tag!("Contact", :xmlns => "http://ws.constantcontact.com/ns/1.0/") do
+			xml.tag!("Contact", :xmlns => XML_NAMESPACE) do
 				self.attributes.reject {|k,v| k == 'ContactLists'}.each{|k, v| xml.tag!( k.to_s.camelize, v )}
-				xml.tag!("OptInSource", self.opt_in_source)
-				xml.tag!("ContactLists") do
+				xml.OptInSource(self.opt_in_source)
+				xml.ContactLists do
 					@contact_lists = [1] if @contact_lists.nil? && self.new?
 					self.contact_lists.sort.each do |list_id|
 						xml.tag!("ContactList", :id=> self.list_url(list_id))
@@ -39,7 +39,7 @@ module ConstantContact
 
 		def list_url(id=nil)
 			id ||= defined?(self.list_id) ? self.list_id : 1
-			"https://api.constantcontact.com/ws/customers/#{self.class.user_name}/lists/#{id}"
+			API_BASE_URI + "/ws/customers/#{self.class.user_name}/lists/#{id}"
 		end
 
 		# Can we email them?

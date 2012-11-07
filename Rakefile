@@ -7,25 +7,25 @@ task :default => :test
 
 desc 'Test the constant_contact plugin.'
 Rake::TestTask.new(:test) do |t|
-  t.libs << 'lib'
-  t.libs << 'test'
-  t.pattern = 'test/**/*_test.rb'
-  t.verbose = true
+	t.libs << 'lib'
+	t.libs << 'test'
+	t.pattern = 'test/**/*_test.rb'
+	t.verbose = true
 end
 
 desc 'Generate documentation for the constant_contact plugin.'
 Rake::RDocTask.new(:rdoc) do |rdoc|
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title    = 'ConstantContact'
-  rdoc.options << '--line-numbers' << '--inline-source'
-  rdoc.rdoc_files.include('README')
-  rdoc.rdoc_files.include('lib/**/*.rb')
+	rdoc.rdoc_dir = 'rdoc'
+	rdoc.title    = 'ConstantContact'
+	rdoc.options << '--line-numbers' << '--inline-source'
+	rdoc.rdoc_files.include('README')
+	rdoc.rdoc_files.include('lib/**/*.rb')
 end
 
 begin
-  require 'mg'
-  MG.new('constant_contact.gemspec')
+	require 'mg'
+	MG.new('constant_contact.gemspec')
 rescue LoadError
-  warn 'mg not available.'
-  warn 'Install it with: gem i mg'
+	warn 'mg not available.'
+	warn 'Install it with: gem i mg'
 end

@@ -2,7 +2,7 @@ module ConstantContact
 	class List < Base
 		def to_xml
 			xml = Builder::XmlMarkup.new
-			xml.tag!("ContactList", :xmlns => "http://ws.constantcontact.com/ns/1.0/") do
+			xml.tag!("ContactList", :xmlns => XML_NAMESPACE) do
 				self.attributes.each{|k, v| xml.tag!( k.to_s.camelize, v )}
 			end
 		end

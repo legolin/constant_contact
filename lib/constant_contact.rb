@@ -4,6 +4,10 @@ require 'constant_contact/base'
 require 'constant_contact/list'
 require 'constant_contact/member'
 require 'constant_contact/contact'
+
+
+
+# These classes either have hardcoded data from previous version, or need testing and updating
 # require 'constant_contact/campaign'
 # require 'constant_contact/campaign_schedule'
 # require 'constant_contact/campaign_event/campaign_event_base'
