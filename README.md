@@ -1,6 +1,6 @@
 ConstantContact
 ===============
-This is a ActiveResource ruby wrapper to the Constant Contact API.
+This is an ActiveResource ruby wrapper to the Constant Contact API.
 
 See the [ActiveResource::Base docs](http://api.rubyonrails.org/classes/ActiveResource/Base.html) for more information on how to use this ActiveResource-based wrapper.
 
@@ -69,5 +69,6 @@ Changelog
 Copyright & License
 -------------------
 
-Copyright (C) 2012 Aaron Ten Clay, released under the MIT license
-Copyright (C) 2009 Timothy Case, released under the MIT license
+Copyright (C) 2012 Aaron Ten Clay, released under the MIT license.
+
+Copyright (C) 2009 Timothy Case, released under the MIT license.
